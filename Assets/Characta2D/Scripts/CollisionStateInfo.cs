@@ -1,0 +1,22 @@
+﻿using System;
+
+/*
+ * Store the collision state
+ */
+
+namespace Characta2D
+{
+    [Serializable]
+    public class CollisionStateInfo
+    {
+        public bool top = false;
+        public bool bottom = false;
+        public bool left = false;
+        public bool right = false;
+
+		public void Clear()
+		{
+			top = bottom = left = right = false;
+		}
+    }
+}
