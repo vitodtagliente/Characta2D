@@ -30,17 +30,22 @@ namespace Characta2D
                 _wasSliding = value;
             }
         }
+		// AI input
+		[HideInInspector]
+		public float wallSlideDirection = 0f;
 
         void LateUpdate()
         {
+			wallSlideDirection = 0f;
+
             if ((character.collision.left || character.collision.right) && character.isJumping == false)
             {
-                var h = Input.GetAxis("Horizontal");
-                // Esegui lo slide solamente se l'utente direziona il personaggio vero la aprete di scivolo
+				float h = (isPlayer) ? Input.GetAxis(horizontalInputAxis) : wallSlideDirection;
+				// slide only if the input look at the place in which there is the wall
                 if ((h == -1f && character.collision.left) || (h == 1f && character.collision.right))
                 {
                     character.velocity.y *= slideSpeed;
-                    // L'oggetto ha iniziato ora a scivolare sul muro
+                    // the character started to slide on the wall
                     wasSliding = true;
                 }
                 else wasSliding = false;

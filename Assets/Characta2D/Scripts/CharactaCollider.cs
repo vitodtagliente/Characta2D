@@ -30,6 +30,8 @@ namespace Characta2D
 		public float minNormalX = .8f;
 		// the same for left, right
 		public float minNormalY = .8f;
+		// slope raycasts length
+		public float slopeRaycastDistance = 2f;
 		// how much time raycasts should be visibile in the editor
 		private readonly float debugLineDuration = 0.01f;
 
@@ -61,6 +63,7 @@ namespace Characta2D
 			// the current collision state
 			var collision = new CollisionStateInfo();
 
+			// vertical collision
 			for (int i = 0; i <= verticalRays; i++) {
 				float amount = (float)(collider.bounds.size.x - 2 * collisionInMargin) / verticalRays;
 
@@ -71,20 +74,21 @@ namespace Characta2D
                 );
 
 				// bottom collision
-				float hitDistance = CheckDirection (ref collision, origin, Vector2.down, collisionDistance.y);
+				float hitDistance = CheckDirection (ref collision, origin, Vector2.down, collisionDistance.y, Color.black);
 				if (movement.y < 0f && hitDistance < collisionDistance.y) {
 					float deltaHit = hitDistance - size.y - collisionMargin;
 					movement.y = -deltaHit;
 				}
 
 				// top collision
-				hitDistance = CheckDirection (ref collision, origin, Vector2.up, collisionDistance.y);
+				hitDistance = CheckDirection (ref collision, origin, Vector2.up, collisionDistance.y, Color.black);
 				if (movement.y > 0f && hitDistance < collisionDistance.y) {
 					float deltaHit = hitDistance - size.y - collisionMargin;
 					movement.y = deltaHit;
 				}
 			}
 
+			// horizontal collision
 			for (int i = 0; i <= horizontalRays; i++) {
 				float amount = (float)(collider.bounds.size.y - 2 * collisionInMargin) / horizontalRays;
 
@@ -95,34 +99,56 @@ namespace Characta2D
 				);
 
 				// right collision
-				float hitDistance = CheckDirection (ref collision, origin, Vector2.right, collisionDistance.x);
+				float hitDistance = CheckDirection (ref collision, origin, Vector2.right, collisionDistance.x, Color.black);
 				if (movement.x > 0f && hitDistance < collisionDistance.x) {
 					float deltaHit = hitDistance - size.x;
 					movement.x = deltaHit;
 				}
 
 				// left collision
-				hitDistance = CheckDirection (ref collision, origin, Vector2.left, collisionDistance.x);
+				hitDistance = CheckDirection (ref collision, origin, Vector2.left, collisionDistance.x, Color.black);
 				if (movement.x < 0f && hitDistance < collisionDistance.x) {
 					float deltaHit = hitDistance - size.x;
 					movement.x = -deltaHit;
 				}
 			}
 
-			CheckSlopes (ref collision);
+			// Check for slopes
+			if (collision.bottom == false)
+				return collision;
 
+			float[] slopeHits = new float[3];
+
+			for (int i = 0; i <= 2; i++) {
+				float amount = (float)(collider.bounds.size.x) / 2;
+
+				Vector3 origin = new Vector3 (
+					transform.position.x - size.x + (i * amount),
+					transform.position.y,
+					transform.position.z
+				);
+
+				bool hit = false;
+				slopeHits[i] = CheckCollisionOnDirection (origin, Vector2.down, slopeRaycastDistance, ref hit, Color.magenta);
+				if (!hit)
+					return collision;
+			}
+
+			if ((slopeHits [0] < slopeHits [1] && slopeHits [1] < slopeHits [2]) ||
+				(slopeHits [0] > slopeHits [1] && slopeHits [1] > slopeHits [2])) {
+				CheckCollisionOnDirection (transform.position, Vector2.left, size.x, ref collision.left, Color.magenta);
+				CheckCollisionOnDirection (transform.position, Vector2.right, size.x, ref collision.right, Color.magenta);
+				Debug.Log ("Slope");
+			}
+
+			// Inegrity check
 			CheckIntegrity (ref collision);
 
 			return collision;
 		}
 
-		void CheckSlopes(ref CollisionStateInfo collision)
-		{
-			
-		}
-
 		// Check for a collision along a specified direction
-		float CheckDirection(ref CollisionStateInfo collision, Vector2 origin, Vector2 direction, float distance)
+		float CheckDirection(ref CollisionStateInfo collision, Vector2 origin, Vector2 direction, float distance, Color color)
 		{
 			RaycastHit2D[] hits = Physics2D.RaycastAll(origin, direction, distance);
 
@@ -144,10 +170,31 @@ namespace Characta2D
 				else if (normal.x < -minNormalX)
 					collision.right = true;
 
-				Debug.DrawLine(origin, hits[i].point, Color.black, debugLineDuration);
+				Debug.DrawLine(origin, hits[i].point, color, debugLineDuration);
 
 				if (hits[i].distance < distance)
 					distance = hits[i].distance;
+			}
+			return distance;
+		}
+
+		float CheckCollisionOnDirection(Vector2 origin, Vector2 direction, float distance, ref bool hit, Color color)
+		{
+			RaycastHit2D[] hits = Physics2D.RaycastAll(origin, direction, distance);
+			hit = false;
+
+			for (int i = 0; i < hits.Length; i++)
+			{
+				// skip this collider
+				if (hits[i].collider == collider)
+					continue;
+				
+				Debug.DrawLine(origin, hits[i].point, color, debugLineDuration);
+
+				if (hits[i].distance < distance)
+					distance = hits[i].distance;
+
+				hit = true;
 			}
 			return distance;
 		}
