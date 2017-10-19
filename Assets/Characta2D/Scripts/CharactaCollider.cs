@@ -113,34 +113,6 @@ namespace Characta2D
 				}
 			}
 
-			// Check for slopes
-			if (collision.bottom == false)
-				return collision;
-
-			float[] slopeHits = new float[3];
-
-			for (int i = 0; i <= 2; i++) {
-				float amount = (float)(collider.bounds.size.x) / 2;
-
-				Vector3 origin = new Vector3 (
-					transform.position.x - size.x + (i * amount),
-					transform.position.y,
-					transform.position.z
-				);
-
-				bool hit = false;
-				slopeHits[i] = CheckCollisionOnDirection (origin, Vector2.down, slopeRaycastDistance, ref hit, Color.magenta);
-				if (!hit)
-					return collision;
-			}
-
-			if ((slopeHits [0] < slopeHits [1] && slopeHits [1] < slopeHits [2]) ||
-				(slopeHits [0] > slopeHits [1] && slopeHits [1] > slopeHits [2])) {
-				CheckCollisionOnDirection (transform.position, Vector2.left, size.x, ref collision.left, Color.magenta);
-				CheckCollisionOnDirection (transform.position, Vector2.right, size.x, ref collision.right, Color.magenta);
-				Debug.Log ("Slope");
-			}
-
 			// Inegrity check
 			CheckIntegrity (ref collision);
 
@@ -169,32 +141,11 @@ namespace Characta2D
 					collision.left = true;
 				else if (normal.x < -minNormalX)
 					collision.right = true;
-
-				Debug.DrawLine(origin, hits[i].point, color, debugLineDuration);
-
-				if (hits[i].distance < distance)
-					distance = hits[i].distance;
-			}
-			return distance;
-		}
-
-		float CheckCollisionOnDirection(Vector2 origin, Vector2 direction, float distance, ref bool hit, Color color)
-		{
-			RaycastHit2D[] hits = Physics2D.RaycastAll(origin, direction, distance);
-			hit = false;
-
-			for (int i = 0; i < hits.Length; i++)
-			{
-				// skip this collider
-				if (hits[i].collider == collider)
-					continue;
 				
 				Debug.DrawLine(origin, hits[i].point, color, debugLineDuration);
 
 				if (hits[i].distance < distance)
-					distance = hits[i].distance;
-
-				hit = true;
+					distance = hits[i].distance;				
 			}
 			return distance;
 		}
