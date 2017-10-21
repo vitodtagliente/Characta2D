@@ -13,6 +13,8 @@ namespace Characta2D
         // activation events
         public UnityEvent OnDashStart = new UnityEvent();
         public UnityEvent OnDashStop = new UnityEvent();
+
+		float lastDirection = 0.0f;
         
         bool canActivate
         {
@@ -21,18 +23,21 @@ namespace Characta2D
 
         void LateUpdate()
         {
+			if (character.desiredMovement.x != 0.0f)
+				lastDirection = 1 * Mathf.Sign(character.desiredMovement.x);
+
 			if (isPlayer && canActivate && Input.GetButtonDown(inputButton))
             {
                 timer = duration;
                 // set the dash speed
-				character.velocity.x = character.facingDirection * maxSpeed;
+				character.velocity.x = lastDirection * maxSpeed;
                 OnDashStart.Invoke();
             }
 
             if (timer > 0f)
             {
                 timer -= Time.deltaTime; 
-                character.velocity.x = character.facingDirection * maxSpeed;
+				character.velocity.x = lastDirection * maxSpeed;
                 if (timer <= 0f)
                     OnDashStop.Invoke();
             }
@@ -42,7 +47,7 @@ namespace Characta2D
 		{
 			if (!isPlayer && canActivate) {
 				timer = duration;
-				character.velocity.x = character.facingDirection * maxSpeed;
+				character.velocity.x = lastDirection * maxSpeed;
 				OnDashStart.Invoke();
 			}
 		}

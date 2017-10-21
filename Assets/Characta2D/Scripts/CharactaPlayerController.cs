@@ -14,6 +14,7 @@ namespace Characta2D
         // The movement speed
         public float speed = 7f;
 		public string horizontalInputAxis = "Horizontal";
+		public string verticalInputAxis = "Vertical";
 
         SpriteRenderer _spriteRenderer;
         SpriteRenderer spriteRenderer
@@ -45,14 +46,15 @@ namespace Characta2D
 		// Get the use input
         public virtual void Update()
         {
-			var h = Input.GetAxis(horizontalInputAxis);
+			desiredMovement.x = Input.GetAxis(horizontalInputAxis);
+			desiredMovement.y = Input.GetAxis(verticalInputAxis);
             // update the velocity according to the user input
-            velocity.x = h * speed;
+			velocity.x = desiredMovement.x * speed;
 
             // flip the sprite if it is necessary
-            if (h < 0f)
+			if (desiredMovement.x < 0f)
                 spriteRenderer.flipX = facingRight;
-            else if (h > 0f)
+			else if (desiredMovement.x > 0f)
                 spriteRenderer.flipX = !facingRight;
         }
 

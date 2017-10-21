@@ -35,9 +35,6 @@ namespace Characta2D
 		// how much time raycasts should be visibile in the editor
 		private readonly float debugLineDuration = 0.01f;
 
-		float collisionMargin;
-		float collisionInMargin;
-
 		// how much rays we have to use for collision detection
 		[SerializeField]
 		int verticalRays = 4;
@@ -52,8 +49,8 @@ namespace Characta2D
 			var direction = movement.normalized;
 
 			// the collision distance cannot be 0
-			collisionMargin = Mathf.Max(.01f, outBoundsMargin);
-			collisionInMargin = Mathf.Max (.01f, inBoundsMargin);
+			float collisionMargin = Mathf.Max(.01f, outBoundsMargin);
+			float collisionInMargin = Mathf.Max (.01f, inBoundsMargin);
 			Vector2 collisionDistance = new Vector2 (
                 size.x + Mathf.Abs (movement.x) + collisionMargin,
                 size.y + Mathf.Abs (movement.y) + collisionMargin

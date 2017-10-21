@@ -85,7 +85,8 @@ namespace Characta2D
         }
 
         // store the last collision state
-        protected CollisionStateInfo lastCollision = new CollisionStateInfo();
+		[HideInInspector]
+		public CollisionStateInfo lastCollision = new CollisionStateInfo();
         // store the current collision state
 		[HideInInspector]
         public CollisionStateInfo collision = new CollisionStateInfo();
@@ -99,6 +100,10 @@ namespace Characta2D
         // simply, the direction in which the character is moving on
 		[HideInInspector]
 		public Vector2 movement;
+		// desired movement direction without collision computing
+		// set this by user input or AI
+		[HideInInspector]
+		public Vector2 desiredMovement;
         
         // resulting gravity = gravityModifier * Physics2D.gravity
         public float gravityModifier = 1;
@@ -137,6 +142,7 @@ namespace Characta2D
 		// update the state of the character on every fixed framerate frame
         protected virtual void FixedUpdate()
         {
+			desiredMovement = Vector2.zero;
             // store the last collision state
             lastCollision = collision;
 
