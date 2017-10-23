@@ -17,6 +17,11 @@ namespace Characta2D
 
         public Vector2 groundNormal = Vector2.zero;
 
+        public bool isInvalid
+        {
+            get { return top && bottom && right && left; }
+        }
+
 		public void Clear()
 		{
 			top = bottom = left = right = false;

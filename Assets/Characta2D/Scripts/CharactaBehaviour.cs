@@ -156,12 +156,12 @@ namespace Characta2D
             velocity += gravityModifier * Physics2D.gravity * Time.deltaTime;
 
             // If the character is grounded,
-            // dont let him to move down
+            // don't let him to move down
             if (isGrounded && velocity.y < 0f)
                 velocity.y = 0;
 
             // If the character has a collision on top,
-            // dont let him to move up
+            // don't let him to move up
             // but apply a movement into the reverse direction
             if (isGrounded == false && collision.top && velocity.y > 0f)
                 velocity.y = upCollisionSpeedModifier;
@@ -176,14 +176,14 @@ namespace Characta2D
             // Store the direction in which the character is moving on
             movement = deltaPosition.normalized;
 
-            // slope movemennt
-            if (isOnSlope)
+            // slope movement
+            if (isOnSlope && desiredMovement.x != 0.0f)
             {
-                
+
             }
 
             // Update the collision state
-            // deltaPosition will be changed according to the collider behaviour
+            // deltaPosition will be changed according to the collider behavior
             collision = collider.Check(ref deltaPosition);
             
             // Move the character

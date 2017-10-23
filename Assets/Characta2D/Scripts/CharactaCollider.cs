@@ -30,9 +30,7 @@ namespace Characta2D
 		public float minNormalX = .8f;
 		// the same for left, right
 		public float minNormalY = .8f;
-		// slope raycasts length
-		public float slopeRaycastDistance = 2f;
-		// how much time raycasts should be visibile in the editor
+		// how much time ray should be visible in the editor
 		private readonly float debugLineDuration = 0.01f;
 
 		// how much rays we have to use for collision detection
@@ -45,7 +43,7 @@ namespace Characta2D
 		{
 			Vector2 position2D = transform.position;
 			var size = collider.bounds.size / 2;
-			// get the direction in wich the character will move on
+			// get the direction in which the character will move on
 			var direction = movement.normalized;
 
 			// the collision distance cannot be 0
@@ -110,7 +108,7 @@ namespace Characta2D
 				}
 			}
 
-			// Inegrity check
+			// Integrity check
 			CheckIntegrity (ref collision);
 
 			return collision;
@@ -120,6 +118,8 @@ namespace Characta2D
 		float CheckDirection(ref CollisionStateInfo collision, Vector2 origin, Vector2 direction, float distance, Color color)
 		{
 			RaycastHit2D[] hits = Physics2D.RaycastAll(origin, direction, distance);
+
+            bool computeGroundNormal = true;
 
 			for (int i = 0; i < hits.Length; i++)
 			{
@@ -144,10 +144,23 @@ namespace Characta2D
 				if (hits[i].distance < distance)
 					distance = hits[i].distance;	
                 
-                // usefull for slope detection
-                if(direction == Vector2.down && Mathf.Abs(normal.x) > Mathf.Abs(collision.groundNormal.x))
+                // useful for slope detection
+                if(direction == Vector2.down && computeGroundNormal)
                 {
-                    collision.groundNormal = normal;
+                    if (collision.groundNormal == Vector2.zero)
+                        collision.groundNormal = normal;
+                    else
+                    {
+                        if (Mathf.Sign(collision.groundNormal.x) != Mathf.Sign(normal.x) && collision.groundNormal.x != 0.0f) {
+                            collision.groundNormal = (collision.bottom) ? Vector2.up : Vector2.zero;
+                            computeGroundNormal = false;
+                        }
+                        else
+                        {
+                            if (Mathf.Abs(normal.x) > Mathf.Abs(collision.groundNormal.x))
+                                collision.groundNormal = normal;
+                        }
+                    }
                 }			
 			}
 			return distance;
@@ -155,7 +168,7 @@ namespace Characta2D
 
 		void CheckIntegrity(ref CollisionStateInfo collision)
 		{
-			if (collision.top && collision.bottom && collision.left && collision.right)
+			if (collision.isInvalid)
 				collision.Clear ();	
 		}
 	}
