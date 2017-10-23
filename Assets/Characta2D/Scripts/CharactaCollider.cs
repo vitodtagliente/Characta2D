@@ -142,7 +142,13 @@ namespace Characta2D
 				Debug.DrawLine(origin, hits[i].point, color, debugLineDuration);
 
 				if (hits[i].distance < distance)
-					distance = hits[i].distance;				
+					distance = hits[i].distance;	
+                
+                // usefull for slope detection
+                if(direction == Vector2.down && Mathf.Abs(normal.x) > Mathf.Abs(collision.groundNormal.x))
+                {
+                    collision.groundNormal = normal;
+                }			
 			}
 			return distance;
 		}

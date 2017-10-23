@@ -138,11 +138,17 @@ namespace Characta2D
         {
             get { return !isGrounded && !collision.left && !collision.right && movement.y > 0f; }
         }
-        
-		// update the state of the character on every fixed framerate frame
+
+        // return true if the character is on a slope
+        public bool isOnSlope
+        {
+            get { return collision.bottom && Mathf.Abs(collision.groundNormal.x) > 0.0f; }
+        }
+
+        // update the state of the character on every fixed framerate frame
         protected virtual void FixedUpdate()
         {
-			desiredMovement = Vector2.zero;
+            desiredMovement = Vector2.zero;
             // store the last collision state
             lastCollision = collision;
 
@@ -150,30 +156,36 @@ namespace Characta2D
             velocity += gravityModifier * Physics2D.gravity * Time.deltaTime;
 
             // If the character is grounded,
-			// dont let him to move down
+            // dont let him to move down
             if (isGrounded && velocity.y < 0f)
                 velocity.y = 0;
 
             // If the character has a collision on top,
-			// dont let him to move up
-			// but apply a movement into the reverse direction
+            // dont let him to move up
+            // but apply a movement into the reverse direction
             if (isGrounded == false && collision.top && velocity.y > 0f)
                 velocity.y = upCollisionSpeedModifier;
 
-			// Don't let the character to move left (or right)
-			// exists a lateral collision along the lateral moving direction
+            // Don't let the character to move left (or right)
+            // exists a lateral collision along the lateral moving direction
             if ((collision.left && velocity.x < 0) || (collision.right && velocity.x > 0f))
                 velocity.x = 0f;
 
             // Compute the delta position
             deltaPosition = velocity * Time.deltaTime;
-			// Store the direction in which the character is moving on
+            // Store the direction in which the character is moving on
             movement = deltaPosition.normalized;
 
-            // Update the collision state
-			// deltaPosition will be changed according to the collider behaviour
-            collision = collider.Check(ref deltaPosition);
+            // slope movemennt
+            if (isOnSlope)
+            {
+                
+            }
 
+            // Update the collision state
+            // deltaPosition will be changed according to the collider behaviour
+            collision = collider.Check(ref deltaPosition);
+            
             // Move the character
             body.position = body.position + deltaPosition;
 

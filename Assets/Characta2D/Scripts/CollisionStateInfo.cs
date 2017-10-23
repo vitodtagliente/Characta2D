@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 /*
  * Store the collision state
@@ -14,9 +15,12 @@ namespace Characta2D
         public bool left = false;
         public bool right = false;
 
+        public Vector2 groundNormal = Vector2.zero;
+
 		public void Clear()
 		{
 			top = bottom = left = right = false;
+            groundNormal = Vector2.zero;
 		}
     }
 }
