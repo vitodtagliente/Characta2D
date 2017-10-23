@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 /*
-	Generic character behaviour
+	Generic character behavior
 */
 
 namespace Characta2D
@@ -25,7 +25,7 @@ namespace Characta2D
                 {
                     _body = GetComponent<Rigidbody2D>();
                     // Initialize it
-					// these settings let we to define a custom physics behaviour
+					// these settings let we to define a custom physics behavior
                     _body.bodyType = RigidbodyType2D.Kinematic;
                     _body.simulated = true;
                     _body.useFullKinematicContacts = true;
@@ -118,7 +118,7 @@ namespace Characta2D
             get { return collision.bottom; }
         }
 
-        // return true if the character is folling down
+        // return true if the character is following down
         public bool isFalling
         {
 			// movement.y < 0f means that the character is going down
