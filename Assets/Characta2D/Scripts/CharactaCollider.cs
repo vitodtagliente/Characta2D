@@ -152,7 +152,8 @@ namespace Characta2D
 					int range = horizontalRays / 3;
 					if (i <= range)
                         collision.leftInfo.bottom = true;
-					else if (i >= horizontalRays - range)
+					else if (i >=
+						horizontalRays - range)
                         collision.leftInfo.top = true;
                     else collision.leftInfo.center = true;
                 }				

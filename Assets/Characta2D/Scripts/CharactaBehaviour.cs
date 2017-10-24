@@ -142,7 +142,7 @@ namespace Characta2D
         // return true if the character is on a slope
         public bool isOnSlope
         {
-            get { return collision.bottom && Mathf.Abs(collision.groundNormal.x) > 0.0f; }
+            get { return collision.bottom && collision.groundNormal.x != 0.0f; }
         }
 
         // update the state of the character on every fixed framerate frame
@@ -181,16 +181,21 @@ namespace Characta2D
             collision = collider.Check(ref deltaPosition);
 
             // slope movement
-            if (isOnSlope && desiredMovement.x != 0.0f)
+            if (isOnSlope)
             {
+				// rotate the character
+				float rotationAngle = 180.0f - Vector2.Angle (Vector2.down, collision.groundNormal);
+				if (transform.rotation.z != rotationAngle)
+					transform.rotation = Quaternion.Euler (0.0f, 0.0f, rotationAngle);
 
-            }
+			}
 
             // Move the character
             body.position = body.position + deltaPosition;
 
+			if (Input.GetKeyDown (KeyCode.T))
+				Debug.Log (180.0f - Vector2.Angle (Vector2.down, collision.groundNormal));
         }
-
     }
 }
 
