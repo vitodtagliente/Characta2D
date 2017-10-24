@@ -181,20 +181,18 @@ namespace Characta2D
             collision = collider.Check(ref deltaPosition);
 
             // slope movement
-            if (isOnSlope)
-            {
+			if (isOnSlope) {
 				// rotate the character
 				float rotationAngle = 180.0f - Vector2.Angle (Vector2.down, collision.groundNormal);
 				if (transform.rotation.z != rotationAngle)
 					transform.rotation = Quaternion.Euler (0.0f, 0.0f, rotationAngle);
 
-			}
+
+			} else if (!isOnSlope && transform.rotation.z != 0.0f)
+				transform.rotation = Quaternion.Euler (0.0f, 0.0f, 0.0f);
 
             // Move the character
             body.position = body.position + deltaPosition;
-
-			if (Input.GetKeyDown (KeyCode.T))
-				Debug.Log (180.0f - Vector2.Angle (Vector2.down, collision.groundNormal));
         }
     }
 }
