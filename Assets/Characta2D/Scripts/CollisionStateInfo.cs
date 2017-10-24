@@ -10,15 +10,27 @@ namespace Characta2D
     [Serializable]
     public class CollisionStateInfo
     {
-        public bool top = false;
-        public bool bottom = false;
-        public bool left = false;
-        public bool right = false;
+        public bool top 
+		{
+			get { return !topInfo.Empty; }
+		}
+		public bool bottom
+		{
+			get { return !bottomInfo.Empty; }			
+		}
+        public bool left
+		{
+			get { return !leftInfo.Empty; }
+		}
+        public bool right
+		{
+			get { return !rightInfo.Empty; }
+		}
 
-        public Characta2D.HorizontalHitStateInfo topInfo;
-        public Characta2D.HorizontalHitStateInfo bottomInfo;
-        public Characta2D.VerticalHitStateInfo leftInfo;
-        public Characta2D.VerticalHitStateInfo rightInfo;
+		public Characta2D.HorizontalHitStateInfo topInfo = new HorizontalHitStateInfo();
+		public Characta2D.HorizontalHitStateInfo bottomInfo = new HorizontalHitStateInfo();
+		public Characta2D.VerticalHitStateInfo leftInfo = new VerticalHitStateInfo();
+		public Characta2D.VerticalHitStateInfo rightInfo = new VerticalHitStateInfo();
 
         public Vector2 groundNormal = Vector2.zero;
 
@@ -29,8 +41,11 @@ namespace Characta2D
 
 		public void Clear()
 		{
-			top = bottom = left = right = false;
             groundNormal = Vector2.zero;
+			topInfo.Clear ();
+			bottomInfo.Clear ();
+			leftInfo.Clear ();
+			rightInfo.Clear ();
 		}
     }
 
@@ -41,21 +56,19 @@ namespace Characta2D
         public bool center = false;
         public bool right = false;
         
-        public bool isInCollision
-        {
-            get { return left || center || right; }
-        }
-
-        public bool isNull
-        {
+        public bool Empty
+       	{
             get { return !left && !center && !right; }
         }
 
-        public void Clear()
-        {
+		public void Set(bool value){
+			left = center = right = value;	
+		}
+
+        public void Clear(){
             left = center = right = false;
-        }
-    }
+		}
+	}
 
     [Serializable]
     public class VerticalHitStateInfo
@@ -64,18 +77,16 @@ namespace Characta2D
         public bool center = false;
         public bool bottom = false;
 
-        public bool isInCollision
-        {
-            get { return bottom || center || top; }
-        }
-
-        public bool isNull
+		public bool Empty
         {
             get { return !bottom && !center && !top; }
         }
 
-        public void Clear()
-        {
+		public void Set(bool value){
+			bottom = center = top = value;	
+		}
+
+		public void Clear(){
             top = center = bottom = false;
         }
     }

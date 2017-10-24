@@ -40,6 +40,13 @@ namespace Characta2D
 		[SerializeField]
 		int horizontalRays = 6;
 
+		// rays should be min 3 per direction
+		void OnValidate()
+		{
+			verticalRays = Mathf.Max (verticalRays, 3);
+			horizontalRays = Mathf.Max (horizontalRays, 3);
+		}
+
 		public CollisionStateInfo Check(ref Vector2 movement)
 		{
 			Vector2 position2D = transform.position;
@@ -79,11 +86,12 @@ namespace Characta2D
                         movement.y = -deltaHit;
                     }
 
-                    if (i < verticalRays / 2)
+					int range = verticalRays / 3;
+                    if (i <= range)
                         collision.bottomInfo.left = true;
-                    else if (i == verticalRays / 2)
-                        collision.bottomInfo.center = true;
-                    else collision.bottomInfo.right = true;
+                    else if (i >= verticalRays - range)
+						collision.bottomInfo.right = true;
+					else collision.bottomInfo.center = true;
                 }				
 
 				// top collision
@@ -95,11 +103,12 @@ namespace Characta2D
                         movement.y = deltaHit;
                     }
 
-                    if (i < verticalRays / 2)
+					int range = verticalRays / 3;
+                    if (i <= range)
                         collision.topInfo.left = true;
-                    else if (i == verticalRays / 2)
-                        collision.topInfo.center = true;
-                    else collision.topInfo.right = true;
+                    else if (i >= verticalRays - range)
+						collision.topInfo.right = true;
+					else collision.topInfo.center = true;
                 }
             }
 
@@ -123,11 +132,12 @@ namespace Characta2D
                         movement.x = deltaHit;
                     }
 
-                    if (i < verticalRays / 2)
+					int range = horizontalRays / 3;
+					if (i <= range)
                         collision.rightInfo.bottom = true;
-                    else if (i == verticalRays / 2)
-                        collision.rightInfo.center = true;
-                    else collision.rightInfo.top = true;
+					else if (i >= horizontalRays - range)
+                        collision.rightInfo.top = true;
+                    else collision.rightInfo.center = true;
                 }				
 
 				// left collision
@@ -139,11 +149,12 @@ namespace Characta2D
                         movement.x = -deltaHit;
                     }
 
-                    if (i < verticalRays / 2)
+					int range = horizontalRays / 3;
+					if (i <= range)
                         collision.leftInfo.bottom = true;
-                    else if (i == verticalRays / 2)
-                        collision.leftInfo.center = true;
-                    else collision.leftInfo.top = true;
+					else if (i >= horizontalRays - range)
+                        collision.leftInfo.top = true;
+                    else collision.leftInfo.center = true;
                 }				
 			}
 
@@ -161,6 +172,8 @@ namespace Characta2D
             bool computeGroundNormal = true;
             hitDistance = distance;
 
+			bool collisionResult = false;
+
 			for (int i = 0; i < hits.Length; i++)
 			{
 				// skip this collider
@@ -171,18 +184,18 @@ namespace Characta2D
 
 				if(direction.y != 0.0f)
                 {
-                    if (normal.y > minNormalY)
-                        collision.bottom = true;
+					if (normal.y > minNormalY)
+						collisionResult = true;
                     else if (normal.y < -minNormalY)
-                        collision.top = true;
+						collisionResult = true;
                 }
 
 				if(direction.x != 0.0f)
                 {
-                    if (normal.x > minNormalX)
-                        collision.left = true;
-                    else if (normal.x < -minNormalX)
-                        collision.right = true;
+					if (normal.x > minNormalX)
+						collisionResult = true;
+					else if (normal.x < -minNormalX)
+						collisionResult = true;
                 }
 				
 				Debug.DrawLine(origin, hits[i].point, Color.black, debugLineDuration);
@@ -210,7 +223,7 @@ namespace Characta2D
                 }			
 			}
 
-            return hits.Length > 0;
+			return collisionResult;
 		}
 
 		void CheckIntegrity(ref CollisionStateInfo collision)

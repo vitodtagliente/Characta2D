@@ -85,10 +85,10 @@ namespace Characta2D
         }
 
         // store the last collision state
-		[HideInInspector]
+		//[HideInInspector]
 		public CollisionStateInfo lastCollision = new CollisionStateInfo();
         // store the current collision state
-		[HideInInspector]
+		//[HideInInspector]
         public CollisionStateInfo collision = new CollisionStateInfo();
 
         // The velocity of this object, which will let the character to move on the scene
