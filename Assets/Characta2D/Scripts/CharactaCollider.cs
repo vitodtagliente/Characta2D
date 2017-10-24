@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 
 /*
-	Custom collider behaviour
+	Custom collider behavior
 */
 
 namespace Characta2D
@@ -57,7 +58,7 @@ namespace Characta2D
 			// create the object in which we can store
 			// the current collision state
 			var collision = new CollisionStateInfo();
-
+            
 			// vertical collision
 			for (int i = 0; i <= verticalRays; i++) {
 				float amount = (float)(collider.bounds.size.x - 2 * collisionInMargin) / verticalRays;
@@ -68,20 +69,39 @@ namespace Characta2D
 					transform.position.z
                 );
 
-				// bottom collision
-				float hitDistance = CheckDirection (ref collision, origin, Vector2.down, collisionDistance.y, Color.black);
-				if (movement.y < 0f && hitDistance < collisionDistance.y) {
-					float deltaHit = hitDistance - size.y - collisionMargin;
-					movement.y = -deltaHit;
-				}
+                // bottom collision
+                float hitDistance = collisionDistance.y;
+				if(CheckDirection (ref collision, origin, Vector2.down, collisionDistance.y, out hitDistance))
+                {
+                    if (movement.y < 0f && hitDistance < collisionDistance.y)
+                    {
+                        float deltaHit = hitDistance - size.y - collisionMargin;
+                        movement.y = -deltaHit;
+                    }
+
+                    if (i < verticalRays / 2)
+                        collision.bottomInfo.left = true;
+                    else if (i == verticalRays / 2)
+                        collision.bottomInfo.center = true;
+                    else collision.bottomInfo.right = true;
+                }				
 
 				// top collision
-				hitDistance = CheckDirection (ref collision, origin, Vector2.up, collisionDistance.y, Color.black);
-				if (movement.y > 0f && hitDistance < collisionDistance.y) {
-					float deltaHit = hitDistance - size.y - collisionMargin;
-					movement.y = deltaHit;
-				}
-			}
+				if(CheckDirection (ref collision, origin, Vector2.up, collisionDistance.y, out hitDistance))
+                {
+                    if (movement.y > 0f && hitDistance < collisionDistance.y)
+                    {
+                        float deltaHit = hitDistance - size.y - collisionMargin;
+                        movement.y = deltaHit;
+                    }
+
+                    if (i < verticalRays / 2)
+                        collision.topInfo.left = true;
+                    else if (i == verticalRays / 2)
+                        collision.topInfo.center = true;
+                    else collision.topInfo.right = true;
+                }
+            }
 
 			// horizontal collision
 			for (int i = 0; i <= horizontalRays; i++) {
@@ -93,19 +113,38 @@ namespace Characta2D
 					transform.position.z
 				);
 
-				// right collision
-				float hitDistance = CheckDirection (ref collision, origin, Vector2.right, collisionDistance.x, Color.black);
-				if (movement.x > 0f && hitDistance < collisionDistance.x) {
-					float deltaHit = hitDistance - size.x;
-					movement.x = deltaHit;
-				}
+                // right collision
+                float hitDistance = collisionDistance.x;
+				if(CheckDirection (ref collision, origin, Vector2.right, collisionDistance.x, out hitDistance))
+                {
+                    if (movement.x > 0f && hitDistance < collisionDistance.x)
+                    {
+                        float deltaHit = hitDistance - size.x;
+                        movement.x = deltaHit;
+                    }
+
+                    if (i < verticalRays / 2)
+                        collision.rightInfo.bottom = true;
+                    else if (i == verticalRays / 2)
+                        collision.rightInfo.center = true;
+                    else collision.rightInfo.top = true;
+                }				
 
 				// left collision
-				hitDistance = CheckDirection (ref collision, origin, Vector2.left, collisionDistance.x, Color.black);
-				if (movement.x < 0f && hitDistance < collisionDistance.x) {
-					float deltaHit = hitDistance - size.x;
-					movement.x = -deltaHit;
-				}
+				if(CheckDirection (ref collision, origin, Vector2.left, collisionDistance.x, out hitDistance))
+                {
+                    if (movement.x < 0f && hitDistance < collisionDistance.x)
+                    {
+                        float deltaHit = hitDistance - size.x;
+                        movement.x = -deltaHit;
+                    }
+
+                    if (i < verticalRays / 2)
+                        collision.leftInfo.bottom = true;
+                    else if (i == verticalRays / 2)
+                        collision.leftInfo.center = true;
+                    else collision.leftInfo.top = true;
+                }				
 			}
 
 			// Integrity check
@@ -115,11 +154,12 @@ namespace Characta2D
 		}
 
 		// Check for a collision along a specified direction
-		float CheckDirection(ref CollisionStateInfo collision, Vector2 origin, Vector2 direction, float distance, Color color)
+		bool CheckDirection(ref CollisionStateInfo collision, Vector2 origin, Vector2 direction, float distance, out float hitDistance)
 		{
 			RaycastHit2D[] hits = Physics2D.RaycastAll(origin, direction, distance);
 
             bool computeGroundNormal = true;
+            hitDistance = distance;
 
 			for (int i = 0; i < hits.Length; i++)
 			{
@@ -129,20 +169,26 @@ namespace Characta2D
 
 				var normal = hits[i].normal;
 
-				if (normal.y > minNormalY)
-					collision.bottom = true;
-				else if (normal.y < -minNormalY)
-					collision.top = true;
+				if(direction.y != 0.0f)
+                {
+                    if (normal.y > minNormalY)
+                        collision.bottom = true;
+                    else if (normal.y < -minNormalY)
+                        collision.top = true;
+                }
 
-				if (normal.x > minNormalX)
-					collision.left = true;
-				else if (normal.x < -minNormalX)
-					collision.right = true;
+				if(direction.x != 0.0f)
+                {
+                    if (normal.x > minNormalX)
+                        collision.left = true;
+                    else if (normal.x < -minNormalX)
+                        collision.right = true;
+                }
 				
-				Debug.DrawLine(origin, hits[i].point, color, debugLineDuration);
+				Debug.DrawLine(origin, hits[i].point, Color.black, debugLineDuration);
 
 				if (hits[i].distance < distance)
-					distance = hits[i].distance;	
+					hitDistance = hits[i].distance;	
                 
                 // useful for slope detection
                 if(direction == Vector2.down && computeGroundNormal)
@@ -163,7 +209,8 @@ namespace Characta2D
                     }
                 }			
 			}
-			return distance;
+
+            return hits.Length > 0;
 		}
 
 		void CheckIntegrity(ref CollisionStateInfo collision)

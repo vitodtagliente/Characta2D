@@ -175,6 +175,10 @@ namespace Characta2D
             deltaPosition = velocity * Time.deltaTime;
             // Store the direction in which the character is moving on
             movement = deltaPosition.normalized;
+            
+            // Update the collision state
+            // deltaPosition will be changed according to the collider behavior
+            collision = collider.Check(ref deltaPosition);
 
             // slope movement
             if (isOnSlope && desiredMovement.x != 0.0f)
@@ -182,10 +186,6 @@ namespace Characta2D
 
             }
 
-            // Update the collision state
-            // deltaPosition will be changed according to the collider behavior
-            collision = collider.Check(ref deltaPosition);
-            
             // Move the character
             body.position = body.position + deltaPosition;
 
