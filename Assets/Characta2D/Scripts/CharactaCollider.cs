@@ -67,8 +67,8 @@ namespace Characta2D
 			var collision = new CollisionStateInfo();
             
 			// vertical collision
-			for (int i = 0; i <= verticalRays; i++) {
-				float amount = (float)(collider.bounds.size.x - 2 * collisionInMargin) / verticalRays;
+			for (int i = 0; i < verticalRays; i++) {
+				float amount = (float)(collider.bounds.size.x - 2 * collisionInMargin) / (verticalRays - 1);
 
 				Vector3 origin = new Vector3 (
 					transform.position.x - size.x + collisionInMargin + (i * amount),
@@ -82,7 +82,7 @@ namespace Characta2D
                 {
                     if (movement.y < 0f && hitDistance < collisionDistance.y)
                     {
-                        float deltaHit = hitDistance - size.y - collisionMargin;
+                        float deltaHit = hitDistance - size.y;
                         movement.y = -deltaHit;
                     }
 
@@ -99,7 +99,7 @@ namespace Characta2D
                 {
                     if (movement.y > 0f && hitDistance < collisionDistance.y)
                     {
-                        float deltaHit = hitDistance - size.y - collisionMargin;
+                        float deltaHit = hitDistance - size.y;
                         movement.y = deltaHit;
                     }
 
@@ -113,8 +113,8 @@ namespace Characta2D
             }
 
 			// horizontal collision
-			for (int i = 0; i <= horizontalRays; i++) {
-				float amount = (float)(collider.bounds.size.y - 2 * collisionInMargin) / horizontalRays;
+			for (int i = 0; i < horizontalRays; i++) {
+				float amount = (float)(collider.bounds.size.y - 2 * collisionInMargin) / (horizontalRays - 1);
 
 				Vector3 origin = new Vector3 (
 					transform.position.x,
@@ -158,9 +158,6 @@ namespace Characta2D
                     else collision.leftInfo.center = true;
                 }				
 			}
-
-			// Integrity check
-			CheckIntegrity (ref collision);
 
 			return collision;
 		}
@@ -225,12 +222,6 @@ namespace Characta2D
 			}
 
 			return collisionResult;
-		}
-
-		void CheckIntegrity(ref CollisionStateInfo collision)
-		{
-			if (collision.isInvalid)
-				collision.Clear ();	
 		}
 	}
 }

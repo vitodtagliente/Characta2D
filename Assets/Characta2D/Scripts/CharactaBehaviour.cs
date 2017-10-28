@@ -85,24 +85,24 @@ namespace Characta2D
         }
 
         // store the last collision state
-		//[HideInInspector]
+		[HideInInspector]
 		public CollisionStateInfo lastCollision = new CollisionStateInfo();
         // store the current collision state
 		//[HideInInspector]
         public CollisionStateInfo collision = new CollisionStateInfo();
 
         // The velocity of this object, which will let the character to move on the scene
-		[HideInInspector]
+		//[HideInInspector]
         public Vector2 velocity;
         // how much the character is moving per frame
 		[HideInInspector]
 		public Vector2 deltaPosition;
         // simply, the direction in which the character is moving on
-		[HideInInspector]
+		//[HideInInspector]
 		public Vector2 movement;
 		// desired movement direction without collision computing
 		// set this by user input or AI
-		[HideInInspector]
+		//[HideInInspector]
 		public Vector2 desiredMovement;
         
         // resulting gravity = gravityModifier * Physics2D.gravity
@@ -180,19 +180,32 @@ namespace Characta2D
             // deltaPosition will be changed according to the collider behavior
             collision = collider.Check(ref deltaPosition);
 
+			// check integrity
+			if (lastCollision.isInvalid && collision.isInvalid)
+				collision.Clear ();
+
             // slope movement
 			if (isOnSlope) {
 				// rotate the character
-				float rotationAngle = 180.0f - Vector2.Angle (Vector2.down, collision.groundNormal);
-				if (transform.rotation.z != rotationAngle)
-					transform.rotation = Quaternion.Euler (0.0f, 0.0f, rotationAngle);
+				float slopeRotationOnZAxis = 180.0f - Vector2.Angle (Vector2.down, collision.groundNormal);
+				if (transform.rotation.z != slopeRotationOnZAxis)
+					transform.rotation = Quaternion.Euler (0.0f, 0.0f, slopeRotationOnZAxis);
 
+				// handle slope movement
+				if (Input.GetKeyDown (KeyCode.G)) {
+					Debug.Log (deltaPosition);
+					var vr = new Vector2 (transform.right.x * deltaPosition.x, transform.right.y * deltaPosition.y);
+					Debug.Log (vr);
+				}
+				deltaPosition = new Vector2 (transform.right.x * deltaPosition.x, transform.right.y * deltaPosition.y);
 
 			} else if (!isOnSlope && transform.rotation.z != 0.0f)
+				// restore default rotation
 				transform.rotation = Quaternion.Euler (0.0f, 0.0f, 0.0f);
-
+			
             // Move the character
-            body.position = body.position + deltaPosition;
+			body.position = body.position + deltaPosition;
+
         }
     }
 }
