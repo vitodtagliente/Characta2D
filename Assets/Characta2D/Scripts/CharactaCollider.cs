@@ -66,6 +66,8 @@ namespace Characta2D
 			// the current collision state
 			var collision = new CollisionStateInfo();
             
+			Vector3 lastPoint = Vector3.zero;
+
 			// vertical collision
 			for (int i = 0; i < verticalRays; i++) {
 				float amount = (float)(collider.bounds.size.x - 2 * collisionInMargin) / (verticalRays - 1);
@@ -76,9 +78,18 @@ namespace Characta2D
 					transform.position.z
                 );
 
+				// slope management
+				if (transform.rotation.z != 0.0f) {
+					origin = transform.position + transform.right * (-size.x + collisionInMargin + (i * amount));
+
+					if (lastPoint != Vector3.zero)
+						Debug.DrawLine (lastPoint, origin, Color.blue, 0.1f);
+					lastPoint = origin;
+				}
+
                 // bottom collision
                 float hitDistance = collisionDistance.y;
-				if(CheckDirection (ref collision, origin, Vector2.down, collisionDistance.y, out hitDistance))
+				if(CheckDirection (ref collision, origin, -transform.up, collisionDistance.y, out hitDistance))
                 {
                     if (movement.y < 0f && hitDistance < collisionDistance.y)
                     {
@@ -95,7 +106,7 @@ namespace Characta2D
                 }				
 
 				// top collision
-				if(CheckDirection (ref collision, origin, Vector2.up, collisionDistance.y, out hitDistance))
+				if(CheckDirection (ref collision, origin, transform.up, collisionDistance.y, out hitDistance))
                 {
                     if (movement.y > 0f && hitDistance < collisionDistance.y)
                     {
@@ -124,7 +135,7 @@ namespace Characta2D
 
                 // right collision
                 float hitDistance = collisionDistance.x;
-				if(CheckDirection (ref collision, origin, Vector2.right, collisionDistance.x, out hitDistance))
+				if(CheckDirection (ref collision, origin, transform.right, collisionDistance.x, out hitDistance))
                 {
                     if (movement.x > 0f && hitDistance < collisionDistance.x)
                     {
@@ -141,7 +152,7 @@ namespace Characta2D
                 }				
 
 				// left collision
-				if(CheckDirection (ref collision, origin, Vector2.left, collisionDistance.x, out hitDistance))
+				if(CheckDirection (ref collision, origin, -transform.right, collisionDistance.x, out hitDistance))
                 {
                     if (movement.x < 0f && hitDistance < collisionDistance.x)
                     {
@@ -160,6 +171,10 @@ namespace Characta2D
 			}
 
 			return collision;
+		}
+
+		public Vector3 RotatePointAroundPivot(Vector3 point, Vector3 pivot, Vector3 angles) {
+			return Quaternion.Euler(angles) * (point - pivot) + pivot;
 		}
 
 		// Check for a collision along a specified direction
@@ -202,14 +217,14 @@ namespace Characta2D
 					hitDistance = hits[i].distance;	
                 
                 // useful for slope detection
-                if(direction == Vector2.down && computeGroundNormal)
+				if(direction.y < 0.0f && computeGroundNormal)
                 {
                     if (collision.groundNormal == Vector2.zero)
                         collision.groundNormal = normal;
                     else
                     {
                         if (Mathf.Sign(collision.groundNormal.x) != Mathf.Sign(normal.x) && collision.groundNormal.x != 0.0f) {
-                            collision.groundNormal = (collision.bottom) ? Vector2.up : Vector2.zero;
+							collision.groundNormal = (collision.bottom) ? Vector2.up : Vector2.zero;
                             computeGroundNormal = false;
                         }
                         else

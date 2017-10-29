@@ -88,21 +88,21 @@ namespace Characta2D
 		[HideInInspector]
 		public CollisionStateInfo lastCollision = new CollisionStateInfo();
         // store the current collision state
-		//[HideInInspector]
+		[HideInInspector]
         public CollisionStateInfo collision = new CollisionStateInfo();
 
         // The velocity of this object, which will let the character to move on the scene
-		//[HideInInspector]
+		[HideInInspector]
         public Vector2 velocity;
         // how much the character is moving per frame
 		[HideInInspector]
 		public Vector2 deltaPosition;
         // simply, the direction in which the character is moving on
-		//[HideInInspector]
+		[HideInInspector]
 		public Vector2 movement;
 		// desired movement direction without collision computing
 		// set this by user input or AI
-		//[HideInInspector]
+		[HideInInspector]
 		public Vector2 desiredMovement;
         
         // resulting gravity = gravityModifier * Physics2D.gravity
@@ -139,11 +139,13 @@ namespace Characta2D
             get { return !isGrounded && !collision.left && !collision.right && movement.y > 0f; }
         }
 
+		/*
         // return true if the character is on a slope
         public bool isOnSlope
         {
-            get { return collision.bottom && collision.groundNormal.x != 0.0f; }
+			get { return collision.bottom && transform.rotation.z != 0.0f; }
         }
+		*/
 
         // update the state of the character on every fixed framerate frame
         protected virtual void FixedUpdate()
@@ -183,27 +185,40 @@ namespace Characta2D
 			// check integrity
 			if (lastCollision.isInvalid && collision.isInvalid)
 				collision.Clear ();
-
-            // slope movement
-			if (isOnSlope) {
-				// rotate the character
-				float slopeRotationOnZAxis = 180.0f - Vector2.Angle (Vector2.down, collision.groundNormal);
-				if (transform.rotation.z != slopeRotationOnZAxis)
-					transform.rotation = Quaternion.Euler (0.0f, 0.0f, slopeRotationOnZAxis);
-
-				// handle slope movement
-				if (Input.GetKeyDown (KeyCode.G)) {
-					Debug.Log (deltaPosition);
-					var vr = new Vector2 (transform.right.x * deltaPosition.x, transform.right.y * deltaPosition.y);
-					Debug.Log (vr);
-				}
-				deltaPosition = new Vector2 (transform.right.x * deltaPosition.x, transform.right.y * deltaPosition.y);
-
-			} else if (!isOnSlope && transform.rotation.z != 0.0f)
-				// restore default rotation
-				transform.rotation = Quaternion.Euler (0.0f, 0.0f, 0.0f);
 			
-            // Move the character
+			/*
+			 * TODO: slope system doesn't work, improve this to manage the character rotation
+			 * 
+			// on slopes character rotation
+			if (isGrounded) {
+				Debug.Log ("grounded");
+				if (collision.groundNormal.x != 0.0f) {
+					float slopeRotationOnZAxis = 180.0f - Vector2.Angle (Vector2.down, collision.groundNormal);
+					if (transform.rotation.z != slopeRotationOnZAxis)
+						transform.rotation = Quaternion.Euler (0.0f, 0.0f, slopeRotationOnZAxis);
+				} else
+					// restore default rotation
+					transform.rotation = Quaternion.Euler (0.0f, 0.0f, 0.0f);
+			} else if(!isGrounded && transform.rotation.z != 0.0f)
+					// restore default rotation
+					transform.rotation = Quaternion.Euler (0.0f, 0.0f, 0.0f);
+			*/
+
+			/*
+			 * TODO: improve this in order to manage on slope movement
+			 * 
+			// Move the character
+			if (isOnSlope) {
+				body.position = body.position + new Vector2 (0.0f, deltaPosition.y);
+				body.position = body.position + new Vector2 (
+					transform.right.x * deltaPosition.x, 
+					(deltaPosition.x != 0.0f) ? transform.right.y : 0.0f
+				);
+			} else
+				body.position = body.position + deltaPosition;
+			*/
+
+			// Move the character
 			body.position = body.position + deltaPosition;
 
         }

@@ -55,7 +55,20 @@ namespace Characta2D
         public bool left = false;
         public bool center = false;
         public bool right = false;
-        
+
+		public bool IsFull 
+		{
+			get { return left && center && right; }
+		}
+
+		public bool OnlyOne {
+			get {
+				return (left && !center && !right) ||
+				(!left && center && !right) ||
+				(!left && !center && right);
+			}
+		}
+
         public bool Empty
        	{
             get { return !left && !center && !right; }
@@ -76,6 +89,19 @@ namespace Characta2D
         public bool top = false;
         public bool center = false;
         public bool bottom = false;
+
+		public bool IsFull 
+		{
+			get { return top && center && bottom; }
+		}
+
+		public bool OnlyOne {
+			get {
+				return (bottom && !center && !top) ||
+					(!bottom && center && !top) ||
+					(!bottom && !center && top);
+			}
+		}
 
 		public bool Empty
         {
