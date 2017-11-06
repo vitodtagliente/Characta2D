@@ -40,6 +40,10 @@ namespace Characta2D
 		[SerializeField]
 		int horizontalRays = 6;
 
+		// inore some collisions if the collider tag is contained in this list
+		[SerializeField]
+		List<string> ignoreCollisionTags = new List<string>();
+
 		// rays should be min 3 per direction
 		void OnValidate()
 		{
@@ -191,6 +195,10 @@ namespace Characta2D
 			{
 				// skip this collider
 				if (hits[i].collider == collider)
+					continue;
+
+				// ignore this collision if the tag is stored in exceptions
+				if (ignoreCollisionTags.Contains (hits [i].collider.tag))
 					continue;
 
 				var normal = hits[i].normal;
