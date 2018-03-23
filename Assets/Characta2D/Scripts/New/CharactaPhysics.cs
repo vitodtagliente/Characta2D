@@ -196,11 +196,13 @@ namespace C2D
                     //if (ignoreCollisionTags.Contains(hits[i].collider.tag))
                     //    continue;
 
-                    distance -= distance - hit.distance;
-
                     if (raysDirection == Vector2.right)
                         collision.right = true;
                     else collision.left = true;
+
+                    if (Mathf.Sign(deltaPosition.x) != Mathf.Sign(raysDirection.x))
+                        break;
+                    distance -= distance - hit.distance;
                 }
 
                 origin.x += amount;
@@ -233,12 +235,14 @@ namespace C2D
                     // ignore this collision if the tag is stored in exceptions
                     //if (ignoreCollisionTags.Contains(hits[i].collider.tag))
                     //    continue;
-
-                    distance -= distance - hit.distance;
-
+                                       
                     if (raysDirection == Vector2.up)
                         collision.up = true;
                     else collision.down = true;
+
+                    if (Mathf.Sign(deltaPosition.x) != Mathf.Sign(raysDirection.x))
+                        break;
+                    distance -= distance - hit.distance;
                 }
 
                 origin.x += amount;
