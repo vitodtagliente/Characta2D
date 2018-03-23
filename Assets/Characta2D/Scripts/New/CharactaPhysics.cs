@@ -64,14 +64,26 @@ namespace C2D
         // This is a kind of impulse that will be applied on the character
         // every time a top collision happens
         public float upCollisionSpeedModifier = -.5f;
+        // This represents the margin outside/inside the collider box bounds
+        public Vector3 boundsMargin = Vector3.zero;
+        // Horizontal collision check in bounds margin
+        public float horizontalMargin = 0.2f;
 
         // store the last collision state
         [HideInInspector]
         public C2D.CollisionStateInfo lastCollision = new CollisionStateInfo();
         // store the current collision state
-        [HideInInspector]
+        //[HideInInspector]
         public C2D.CollisionStateInfo collision = new CollisionStateInfo();
 
+        struct RaycastOrigins
+        {
+            public Vector2 topLeft, topRight;
+            public Vector2 bottomLeft, bottomRight;
+        };
+
+        RaycastOrigins origins;
+        
         // return true if the character is on the ground
         public bool isGrounded
         {
@@ -105,7 +117,7 @@ namespace C2D
             horizontalRays = Mathf.Max(horizontalRays, 3);
         }
 
-        public virtual void FixedUpdate()
+        public void FixedUpdate()
         {
             // reset the input
             inputMovement = Vector2.zero;
@@ -138,7 +150,7 @@ namespace C2D
 
             // Update the collision state
             // deltaPosition will be changed according to the collider behavior
-            collision = Check(ref deltaPosition);
+            CheckCollisions(ref deltaPosition);
 
             // check integrity
             if (lastCollision.isInvalid && collision.isInvalid)
@@ -148,9 +160,101 @@ namespace C2D
             body.position = body.position + deltaPosition;
         }
 
-        protected virtual C2D.CollisionStateInfo Check(ref Vector2 movement)
+        private void CheckCollisions(ref Vector2 deltaPosition)
         {
-            return new C2D.CollisionStateInfo();
+            UpdateOrigins();
+            collision.Clear();
+            HorizontalCollision(Vector2.right, ref deltaPosition);
+            HorizontalCollision(Vector2.left, ref deltaPosition);
+            VerticalCollision(Vector2.down, ref deltaPosition);
+            VerticalCollision(Vector2.up, ref deltaPosition);
+        }
+
+        private void HorizontalCollision(Vector2 raysDirection, ref Vector2 deltaPosition)
+        {
+            float amount = (float)(collider.bounds.size.y - horizontalMargin * 2) / (horizontalRays - 1);
+            var origin = origins.bottomRight;
+            if (raysDirection == Vector2.left)
+                origin = origins.bottomLeft;
+            origin.y += horizontalMargin;
+
+            var distance = Mathf.Abs(deltaPosition.x);
+
+            for (int i = 0; i < verticalRays; i++)
+            {
+                Debug.DrawRay(origin, raysDirection * distance, Color.magenta);
+
+                RaycastHit2D[] hits = Physics2D.RaycastAll(origin, raysDirection, distance);
+
+                foreach (var hit in hits)
+                {
+                    // ignore this collider
+                    if (hit.collider == collider)
+                        continue;
+
+                    // ignore this collision if the tag is stored in exceptions
+                    //if (ignoreCollisionTags.Contains(hits[i].collider.tag))
+                    //    continue;
+
+                    distance -= distance - hit.distance;
+
+                    if (raysDirection == Vector2.right)
+                        collision.right = true;
+                    else collision.left = true;
+                }
+
+                origin.x += amount;
+            }
+
+            deltaPosition.x = Mathf.Sign(deltaPosition.x) * distance;
+        }
+
+        private void VerticalCollision(Vector2 raysDirection, ref Vector2 deltaPosition)
+        {
+            float amount = (float)(collider.bounds.size.x) / (verticalRays - 1);
+            var origin = origins.bottomLeft;
+            if(raysDirection == Vector2.up)
+                origin = origins.topLeft;
+
+            var distance = Mathf.Abs(deltaPosition.y);
+
+            for (int i = 0; i < verticalRays; i++)
+            {
+                Debug.DrawRay(origin, raysDirection * distance, Color.magenta);
+
+                RaycastHit2D[] hits = Physics2D.RaycastAll(origin, raysDirection, distance);
+
+                foreach(var hit in hits)
+                {
+                    // ignore this collider
+                    if (hit.collider == collider)
+                        continue;
+
+                    // ignore this collision if the tag is stored in exceptions
+                    //if (ignoreCollisionTags.Contains(hits[i].collider.tag))
+                    //    continue;
+
+                    distance -= distance - hit.distance;
+
+                    if (raysDirection == Vector2.up)
+                        collision.up = true;
+                    else collision.down = true;
+                }
+
+                origin.x += amount;
+            }
+
+            deltaPosition.y = Mathf.Sign(deltaPosition.y) * distance;
+        }
+
+        private void UpdateOrigins()
+        {
+            var bounds = collider.bounds;
+            bounds.Expand(boundsMargin);
+            origins.bottomLeft = bounds.min;
+            origins.topRight = bounds.max;
+            origins.bottomRight = new Vector3(bounds.max.x, bounds.min.y, bounds.min.z);
+            origins.topLeft = new Vector3(bounds.min.x, bounds.max.y, bounds.max.z);
         }
     }
 }
