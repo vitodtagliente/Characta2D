@@ -7,6 +7,7 @@ namespace Characta2D
 	[RequireComponent(typeof(Characta2D.Jump))]
     public class DoubleJump : Characta2D.CharactaCapability
     {
+        /*
         public float jumpTakeOffSpeed = 5;
         public float jumpFallFactor = 0.5f;
         // this is the max number of jumps that the character can do
@@ -69,5 +70,6 @@ namespace Characta2D
 			if (character.velocity.y > 0)
 				character.velocity.y *= jumpFallFactor;
 		}
+        */
     }
 }

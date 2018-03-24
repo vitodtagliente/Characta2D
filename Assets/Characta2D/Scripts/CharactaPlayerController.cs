@@ -8,23 +8,31 @@
 namespace Characta2D
 {
     [AddComponentMenu("Characta2D/PlayerController")]
-    [RequireComponent(typeof(SpriteRenderer))]
-	public class CharactaPlayerController : Characta2D.CharactaSprite
-    {        
+    [RequireComponent(typeof(Characta2D.CharactaSprite))]
+	public class CharactaPlayerController : MonoBehaviour
+    {
+        Characta2D.CharactaSprite _sprite;
+        public Characta2D.CharactaSprite sprite
+        {
+            get
+            {
+                if(_sprite == null)
+                    _sprite = GetComponent<Characta2D.CharactaSprite>();
+                return _sprite;
+            }
+        }
+
         // The movement speed
         public float speed = 7f;
 		public string horizontalInputAxis = "Horizontal";
-		public string verticalInputAxis = "Vertical";
-		        
-		// Get the use input
-		public override void Update()
-        {
-			desiredMovement.x = Input.GetAxis(horizontalInputAxis);
-			desiredMovement.y = Input.GetAxis(verticalInputAxis);
-            // update the velocity according to the user input
-			velocity.x = desiredMovement.x * speed;
 
-			base.Update ();
+        // Get the user input
+        public virtual void Update()
+        {
+            sprite.input = new Vector2(
+                Input.GetAxis(horizontalInputAxis) * speed,
+                0.0f
+            );
         }
 
     }

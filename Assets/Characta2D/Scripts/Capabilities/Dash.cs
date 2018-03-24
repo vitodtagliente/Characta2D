@@ -6,6 +6,7 @@ namespace Characta2D
     [AddComponentMenu("Characta2D/Capability/Dash")]
     public class Dash : Characta2D.CharactaCapability
     {
+        /*
         public float maxSpeed = 20f;
         public float duration = 0.2f;
         float timer = 0f;
@@ -51,5 +52,6 @@ namespace Characta2D
 				OnDashStart.Invoke();
 			}
 		}
+        */
     }
 }

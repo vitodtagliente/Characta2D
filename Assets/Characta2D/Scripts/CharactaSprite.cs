@@ -5,22 +5,13 @@ using UnityEngine;
 namespace Characta2D
 {
 	[AddComponentMenu("Characta2D/Sprite")]
-	public class CharactaSprite : Characta2D.CharactaBehaviour {
+    [RequireComponent(typeof(Characta2D.CharactaPhysics))]
+    public class CharactaSprite : Characta2D.CharactaObject
+    {
+        // Is the character looking at right? 
+        // this attribute should be used to configure (in Editor) the starting state 
+        [SerializeField]
 
-		SpriteRenderer _spriteRenderer;
-		public SpriteRenderer spriteRenderer
-		{
-			get
-			{
-				if (_spriteRenderer == null)
-					_spriteRenderer = GetComponent<SpriteRenderer>();
-				return _spriteRenderer;
-			}
-		}
-
-		// Is the character looking at right? 
-		// this attribute should be used to configure (in Editor) the starting state 
-		[SerializeField]
 		bool facingRight = true;
 		// Return the looking on direction.
 		// -1f = left, 1f = right
@@ -35,12 +26,12 @@ namespace Characta2D
 		}
 
 		// Get the use input
-		public virtual void Update()
+		public void Update()
 		{
 			// flip the sprite if it is necessary
-			if (desiredMovement.x < 0f)
+			if (input.x < 0f)
 				spriteRenderer.flipX = facingRight;
-			else if (desiredMovement.x > 0f)
+			else if (input.x > 0f)
 				spriteRenderer.flipX = !facingRight;
 		}
 	}

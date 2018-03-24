@@ -6,6 +6,7 @@ namespace Characta2D
     [AddComponentMenu("Characta2D/Capability/AirDash")]
     public class AirDash : Characta2D.CharactaCapability
     {
+        /*
         public float maxSpeed = 10f;
         public float duration = .2f;
         float timer = 0f;
@@ -64,5 +65,6 @@ namespace Characta2D
 				OnDashStart.Invoke();
 			}
 		}
+        */
     }
 }

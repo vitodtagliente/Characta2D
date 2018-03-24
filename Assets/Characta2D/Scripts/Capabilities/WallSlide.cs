@@ -8,6 +8,7 @@ namespace Characta2D
     [AddComponentMenu("Characta2D/Capability/WallSlide")]
     public class WallSlide : Characta2D.CharactaCapability
     {
+        /*
 		// slide speed
 		public float slideSpeed = .8f;
 		// activation events
@@ -46,5 +47,6 @@ namespace Characta2D
             }
             else wasSliding = false;
         }
+        */
     }
 }

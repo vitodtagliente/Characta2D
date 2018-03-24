@@ -36,14 +36,14 @@ namespace Characta2D
 
 			if (Input.GetButtonDown (inputButton) && canJump)
             {
-                character.velocity.y = jumpTakeOffSpeed;
+                character.physics.velocity.y = jumpTakeOffSpeed;
                 OnJump.Invoke();
             }
             else if (Input.GetButtonUp(inputButton))
             {
                 if (character.velocity.y > 0)
                 {
-                    character.velocity.y *= jumpFallFactor;
+                    character.physics.velocity.y *= jumpFallFactor;
                 }
             }
         }
@@ -51,7 +51,7 @@ namespace Characta2D
 		public override void Activate ()
 		{
 			if (!isPlayer && canJump) {
-				character.velocity.y = jumpTakeOffSpeed;
+				character.physics.velocity.y = jumpTakeOffSpeed;
 				OnJump.Invoke();
 				Invoke ("Fall", AIJumpDuration);
 			}
@@ -61,7 +61,7 @@ namespace Characta2D
 		void Fall()
 		{
 			if (character.velocity.y > 0)
-				character.velocity.y *= jumpFallFactor;
+				character.physics.velocity.y *= jumpFallFactor;
 		}
 	}
 }

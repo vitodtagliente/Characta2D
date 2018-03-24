@@ -6,6 +6,7 @@ namespace Characta2D
     [AddComponentMenu("Characta2D/Capability/WallJump")]
     public class WallJump : Characta2D.CharactaCapability
     {
+        /*
         public float jumpTakeOffSpeed = 7;
 		public float jumpFallFactor = 0.5f;
 		// The input button used to ativate this capability
@@ -62,5 +63,6 @@ namespace Characta2D
 			if (character.velocity.y > 0)
 				character.velocity.y *= jumpFallFactor;
 		}
+        */
     }
 }

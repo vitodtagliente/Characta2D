@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace C2D
+namespace Characta2D
 {
+    [AddComponentMenu("Characta2D/Physics")]
     [RequireComponent(typeof(Rigidbody2D))]
     [RequireComponent(typeof(BoxCollider2D))]
     public class CharactaPhysics : MonoBehaviour
@@ -46,17 +47,17 @@ namespace C2D
         int horizontalRays = 6;
 
         // The velocity of this object, which will let the character to move on the scene
-        [HideInInspector]
+        //[HideInInspector]
         public Vector2 velocity;
         // how much the character is moving per frame
-        [HideInInspector]
+        //[HideInInspector]
         public Vector2 deltaPosition;
         // simply, the direction in which the character is moving on
-        [HideInInspector]
+        //[HideInInspector]
         public Vector2 movement;
         // desired movement direction without collision computing
-        [HideInInspector]
-        public Vector2 inputMovement;
+        //[HideInInspector]
+        public Vector2 input;
 
         // resulting gravity = gravityModifier * Physics2D.gravity
         public float gravityModifier = 1;
@@ -71,10 +72,10 @@ namespace C2D
 
         // store the last collision state
         [HideInInspector]
-        public C2D.CollisionStateInfo lastCollision = new CollisionStateInfo();
+        public Characta2D.CollisionStateInfo lastCollision = new CollisionStateInfo();
         // store the current collision state
         //[HideInInspector]
-        public C2D.CollisionStateInfo collision = new CollisionStateInfo();
+        public Characta2D.CollisionStateInfo collision = new CollisionStateInfo();
 
         struct RaycastOrigins
         {
@@ -83,33 +84,6 @@ namespace C2D
         };
 
         RaycastOrigins origins;
-        
-        // return true if the character is on the ground
-        public bool isGrounded
-        {
-            get { return collision.down; }
-        }
-
-        // return true if the character is following down
-        public bool isFalling
-        {
-            // movement.y < 0f means that the character is going down
-            get { return isGrounded == false && movement.y < 0f; }
-        }
-
-        // return true if the character is sliding on a wall or a generic surface
-        // this means that the character is going down while a lateral collision (left or right) happens
-        public bool isSliding
-        {
-            get { return (collision.left || collision.right) && movement.y < 0f; }
-        }
-
-        // return true if the character is jumping,
-        // which means that it is moving up without a bottom collision enabled
-        public bool isJumping
-        {
-            get { return !isGrounded && !collision.left && !collision.right && movement.y > 0f; }
-        }
 
         public void Awake()
         {
@@ -118,24 +92,24 @@ namespace C2D
         }
 
         public void FixedUpdate()
-        {
-            // reset the input
-            inputMovement = Vector2.zero;
+        {            
             // store the last collision state
             lastCollision = collision;
 
+            // Apply input
+            velocity.x = input.x;
             // Apply the gravity to the character's velocity
             velocity += gravityModifier * Physics2D.gravity * Time.deltaTime;
 
             // If the character is grounded,
             // don't let him to move down
-            if (isGrounded && velocity.y < 0f)
+            if (collision.down && velocity.y < 0f)
                 velocity.y = 0;
 
             // If the character has a collision on top,
             // don't let him to move up
             // but apply a movement into the reverse direction
-            if (isGrounded == false && collision.up && velocity.y > 0f)
+            if (collision.down == false && collision.up && velocity.y > 0f)
                 velocity.y = upCollisionSpeedModifier;
 
             // Don't let the character to move left (or right)
@@ -153,11 +127,14 @@ namespace C2D
             CheckCollisions(ref deltaPosition);
 
             // check integrity
-            if (lastCollision.isInvalid && collision.isInvalid)
+            if (lastCollision.IsInvalid && collision.IsInvalid)
                 collision.Clear();
 
             // Move the character
             body.position = body.position + deltaPosition;
+
+            // reset the input
+            input = Vector2.zero;
         }
 
         private void CheckCollisions(ref Vector2 deltaPosition)
@@ -201,11 +178,11 @@ namespace C2D
                     else collision.left = true;
 
                     if (Mathf.Sign(deltaPosition.x) != Mathf.Sign(raysDirection.x))
-                        break;
+                        return;
                     distance -= distance - hit.distance;
                 }
 
-                origin.x += amount;
+                origin.y += amount;
             }
 
             deltaPosition.x = Mathf.Sign(deltaPosition.x) * distance;
@@ -240,8 +217,8 @@ namespace C2D
                         collision.up = true;
                     else collision.down = true;
 
-                    if (Mathf.Sign(deltaPosition.x) != Mathf.Sign(raysDirection.x))
-                        break;
+                    if (Mathf.Sign(deltaPosition.y) != Mathf.Sign(raysDirection.y))
+                        return;
                     distance -= distance - hit.distance;
                 }
 

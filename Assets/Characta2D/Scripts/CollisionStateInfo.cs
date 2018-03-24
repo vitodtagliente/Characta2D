@@ -10,110 +10,19 @@ namespace Characta2D
     [Serializable]
     public class CollisionStateInfo
     {
-        public bool top 
-		{
-			get { return !topInfo.Empty; }
-		}
-		public bool bottom
-		{
-			get { return !bottomInfo.Empty; }			
-		}
-        public bool left
-		{
-			get { return !leftInfo.Empty; }
-		}
-        public bool right
-		{
-			get { return !rightInfo.Empty; }
-		}
-
-		public Characta2D.HorizontalHitStateInfo topInfo = new HorizontalHitStateInfo();
-		public Characta2D.HorizontalHitStateInfo bottomInfo = new HorizontalHitStateInfo();
-		public Characta2D.VerticalHitStateInfo leftInfo = new VerticalHitStateInfo();
-		public Characta2D.VerticalHitStateInfo rightInfo = new VerticalHitStateInfo();
-
-        public Vector2 groundNormal = Vector2.zero;
-
-        public bool isInvalid
-        {
-            get { return top && bottom && right && left; }
-        }
-
-		public void Clear()
-		{
-            groundNormal = Vector2.zero;
-			topInfo.Clear ();
-			bottomInfo.Clear ();
-			leftInfo.Clear ();
-			rightInfo.Clear ();
-		}
-    }
-
-    [Serializable]
-    public class HorizontalHitStateInfo
-    {
+        public bool up = false;
+        public bool down = false;
         public bool left = false;
-        public bool center = false;
         public bool right = false;
 
-		public bool IsFull 
-		{
-			get { return left && center && right; }
-		}
-
-		public bool OnlyOne {
-			get {
-				return (left && !center && !right) ||
-				(!left && center && !right) ||
-				(!left && !center && right);
-			}
-		}
-
-        public bool Empty
-       	{
-            get { return !left && !center && !right; }
-        }
-
-		public void Set(bool value){
-			left = center = right = value;	
-		}
-
-        public void Clear(){
-            left = center = right = false;
-		}
-	}
-
-    [Serializable]
-    public class VerticalHitStateInfo
-    {
-        public bool top = false;
-        public bool center = false;
-        public bool bottom = false;
-
-		public bool IsFull 
-		{
-			get { return top && center && bottom; }
-		}
-
-		public bool OnlyOne {
-			get {
-				return (bottom && !center && !top) ||
-					(!bottom && center && !top) ||
-					(!bottom && !center && top);
-			}
-		}
-
-		public bool Empty
+        public bool IsInvalid
         {
-            get { return !bottom && !center && !top; }
+            get { return up && down && right && left; }
         }
 
-		public void Set(bool value){
-			bottom = center = top = value;	
-		}
-
-		public void Clear(){
-            top = center = bottom = false;
+        public void Clear()
+        {
+            up = down = left = right = false;
         }
     }
 }

@@ -6,17 +6,17 @@
 
 namespace Characta2D
 {
-	[RequireComponent(typeof(Characta2D.CharactaBehaviour))]
+	[RequireComponent(typeof(Characta2D.CharactaObject))]
     public abstract class CharactaCapability : MonoBehaviour
     {
 
-		CharactaBehaviour _character;
-		public CharactaBehaviour character
+		Characta2D.CharactaObject _character;
+		public Characta2D.CharactaObject character
         {
             get
             {
                 if (_character == null)
-					_character = GetComponent<CharactaBehaviour>();
+					_character = GetComponent<Characta2D.CharactaObject>();
                 return _character;
             }
         }
