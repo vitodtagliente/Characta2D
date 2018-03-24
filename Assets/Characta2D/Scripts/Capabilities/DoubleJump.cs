@@ -7,7 +7,6 @@ namespace Characta2D
 	[RequireComponent(typeof(Characta2D.Jump))]
     public class DoubleJump : Characta2D.CharactaCapability
     {
-        /*
         public float jumpTakeOffSpeed = 5;
         public float jumpFallFactor = 0.5f;
         // this is the max number of jumps that the character can do
@@ -42,14 +41,14 @@ namespace Characta2D
             if (Input.GetButtonDown(inputButton) && canJump)
             {
                 jumpCounter++;
-                character.velocity.y = jumpTakeOffSpeed;
+                character.physics.velocity.y = jumpTakeOffSpeed;
                 OnJump.Invoke();
             }
             else if (Input.GetButtonUp(inputButton))
             {
                 if (character.velocity.y > 0)
                 {
-                    character.velocity.y *= jumpFallFactor;
+                    character.physics.velocity.y *= jumpFallFactor;
                 }
             }
         }
@@ -58,7 +57,7 @@ namespace Characta2D
 		{
 			if (!isPlayer && canJump) {
 				jumpCounter++;
-				character.velocity.y = jumpTakeOffSpeed;
+				character.physics.velocity.y = jumpTakeOffSpeed;
 				OnJump.Invoke();
 				Invoke ("Fall", AIJumpDuration);
 			}
@@ -68,8 +67,7 @@ namespace Characta2D
 		void Fall()
 		{
 			if (character.velocity.y > 0)
-				character.velocity.y *= jumpFallFactor;
+				character.physics.velocity.y *= jumpFallFactor;
 		}
-        */
     }
 }

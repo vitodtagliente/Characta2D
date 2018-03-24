@@ -67,8 +67,8 @@ namespace Characta2D
         public float upCollisionSpeedModifier = -.5f;
         // This represents the margin outside/inside the collider box bounds
         public Vector3 boundsMargin = Vector3.zero;
-        // Horizontal collision check in bounds margin
-        public float horizontalMargin = 0.2f;
+        // This represents the padding inside the collider box bounds
+        public Vector2 boundsPadding = Vector2.zero;
 
         // store the last collision state
         [HideInInspector]
@@ -140,20 +140,32 @@ namespace Characta2D
         private void CheckCollisions(ref Vector2 deltaPosition)
         {
             UpdateOrigins();
-            collision.Clear();
-            HorizontalCollision(Vector2.right, ref deltaPosition);
-            HorizontalCollision(Vector2.left, ref deltaPosition);
+            if (deltaPosition.x != 0.0f)
+            {
+                if (deltaPosition.x > 0.0f)
+                {
+                    HorizontalCollision(Vector2.right, ref deltaPosition);
+                    collision.left = false;
+                }                    
+                else
+                {
+                    HorizontalCollision(Vector2.left, ref deltaPosition);
+                    collision.right = false;
+                }
+            }
+
+            collision.down = collision.up = false;
             VerticalCollision(Vector2.down, ref deltaPosition);
             VerticalCollision(Vector2.up, ref deltaPosition);
         }
 
         private void HorizontalCollision(Vector2 raysDirection, ref Vector2 deltaPosition)
         {
-            float amount = (float)(collider.bounds.size.y - horizontalMargin * 2) / (horizontalRays - 1);
+            float amount = (float)(collider.bounds.size.y - boundsPadding.y * 2) / (horizontalRays - 1);
             var origin = origins.bottomRight;
             if (raysDirection == Vector2.left)
                 origin = origins.bottomLeft;
-            origin.y += horizontalMargin;
+            origin.y += boundsPadding.y;
 
             var distance = Mathf.Abs(deltaPosition.x);
 
@@ -190,10 +202,11 @@ namespace Characta2D
 
         private void VerticalCollision(Vector2 raysDirection, ref Vector2 deltaPosition)
         {
-            float amount = (float)(collider.bounds.size.x) / (verticalRays - 1);
+            float amount = (float)(collider.bounds.size.x - boundsPadding.x * 2) / (verticalRays - 1);
             var origin = origins.bottomLeft;
             if(raysDirection == Vector2.up)
                 origin = origins.topLeft;
+            origin.x += boundsPadding.x;
 
             var distance = Mathf.Abs(deltaPosition.y);
 

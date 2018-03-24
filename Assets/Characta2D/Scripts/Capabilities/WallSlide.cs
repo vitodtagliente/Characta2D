@@ -8,7 +8,6 @@ namespace Characta2D
     [AddComponentMenu("Characta2D/Capability/WallSlide")]
     public class WallSlide : Characta2D.CharactaCapability
     {
-        /*
 		// slide speed
 		public float slideSpeed = .8f;
 		// activation events
@@ -33,13 +32,13 @@ namespace Characta2D
 
         void LateUpdate()
         {
-            if ((character.collision.left || character.collision.right) && character.isJumping == false)
+            if (character.isSliding)
             {
 				// slide only if the input look at the place in which there is the wall
-				if ((character.desiredMovement.x == -1f && character.collision.left) || 
-					(character.desiredMovement.x == 1f && character.collision.right))
+				if ((character.input.x < 0.0f && character.collision.left) || 
+					(character.input.x > 0.0f && character.collision.right))
                 {
-                    character.velocity.y *= slideSpeed;
+                    character.physics.velocity.y *= slideSpeed;
                     // the character started to slide on the wall
                     wasSliding = true;
                 }
@@ -47,6 +46,5 @@ namespace Characta2D
             }
             else wasSliding = false;
         }
-        */
     }
 }
