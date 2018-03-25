@@ -6,10 +6,9 @@ namespace Characta2D
     [AddComponentMenu("Characta2D/Capability/Dash")]
     public class Dash : Characta2D.CharactaCapability
     {
-        /*
         public float maxSpeed = 20f;
         public float duration = 0.2f;
-        float timer = 0f;
+        float timer = 0.0f;
         public string inputButton = "Fire3";
         // activation events
         public UnityEvent OnDashStart = new UnityEvent();
@@ -24,21 +23,21 @@ namespace Characta2D
 
         void LateUpdate()
         {
-			if (character.desiredMovement.x != 0.0f)
-				lastDirection = 1 * Mathf.Sign(character.desiredMovement.x);
+			if (character.input.x != 0.0f)
+				lastDirection = 1 * Mathf.Sign(character.input.x);
 
 			if (isPlayer && canActivate && Input.GetButtonDown(inputButton))
             {
                 timer = duration;
                 // set the dash speed
-				character.velocity.x = lastDirection * maxSpeed;
+				character.ApplyHorizontalInput(lastDirection * maxSpeed);
                 OnDashStart.Invoke();
             }
 
             if (timer > 0f)
             {
-                timer -= Time.deltaTime; 
-				character.velocity.x = lastDirection * maxSpeed;
+                timer -= Time.deltaTime;
+                character.ApplyHorizontalInput(lastDirection * maxSpeed);
                 if (timer <= 0f)
                     OnDashStop.Invoke();
             }
@@ -48,10 +47,9 @@ namespace Characta2D
 		{
 			if (!isPlayer && canActivate) {
 				timer = duration;
-				character.velocity.x = lastDirection * maxSpeed;
-				OnDashStart.Invoke();
+                character.ApplyHorizontalInput(lastDirection * maxSpeed);
+                OnDashStart.Invoke();
 			}
 		}
-        */
     }
 }

@@ -47,35 +47,36 @@ namespace Characta2D
         int horizontalRays = 6;
 
         // The velocity of this object, which will let the character to move on the scene
-        //[HideInInspector]
-        public Vector2 velocity;
+        Vector2 _velocity = Vector2.zero;
+        public Vector2 velocity { get { return _velocity; } }
         // how much the character is moving per frame
-        //[HideInInspector]
-        public Vector2 deltaPosition;
+        Vector2 deltaPosition = Vector2.zero;
         // simply, the direction in which the character is moving on
-        //[HideInInspector]
-        public Vector2 movement;
+        public Vector2 movement { get; private set; }
+        
         // desired movement direction without collision computing
-        //[HideInInspector]
+        [HideInInspector]
         public Vector2 input;
 
+        // enable/disable gravity applying
+        public bool gravityEnabled = true;
         // resulting gravity = gravityModifier * Physics2D.gravity
         public float gravityModifier = 1;
+
         // When a top collision happens, change the character velocity.y to this one
         // This is a kind of impulse that will be applied on the character
         // every time a top collision happens
         public float upCollisionSpeedModifier = -.5f;
+
         // This represents the margin outside/inside the collider box bounds
         public Vector3 boundsMargin = Vector3.zero;
         // This represents the padding inside the collider box bounds
         public Vector2 boundsPadding = Vector2.zero;
 
         // store the last collision state
-        [HideInInspector]
-        public Characta2D.CollisionStateInfo lastCollision = new CollisionStateInfo();
+        public Characta2D.CollisionStateInfo lastCollision { get; private set; }
         // store the current collision state
-        //[HideInInspector]
-        public Characta2D.CollisionStateInfo collision = new CollisionStateInfo();
+        public Characta2D.CollisionStateInfo collision { get; private set; }
 
         struct RaycastOrigins
         {
@@ -89,6 +90,10 @@ namespace Characta2D
         {
             verticalRays = Mathf.Max(verticalRays, 3);
             horizontalRays = Mathf.Max(horizontalRays, 3);
+            lastCollision = new CollisionStateInfo();
+            collision = new CollisionStateInfo();
+            lastCollision.Clear();
+            collision.Clear();
         }
 
         public void FixedUpdate()
@@ -97,25 +102,29 @@ namespace Characta2D
             lastCollision = collision;
 
             // Apply input
-            velocity.x = input.x;
+            _velocity.x = input.x;
+            if (input.y != 0.0f)
+                _velocity.y = input.y;
+      
             // Apply the gravity to the character's velocity
-            velocity += gravityModifier * Physics2D.gravity * Time.deltaTime;
+            if (gravityEnabled)
+                _velocity += gravityModifier * Physics2D.gravity * Time.deltaTime;
 
             // If the character is grounded,
             // don't let him to move down
             if (collision.down && velocity.y < 0f)
-                velocity.y = 0;
+                _velocity.y = 0;
 
             // If the character has a collision on top,
             // don't let him to move up
             // but apply a movement into the reverse direction
             if (collision.down == false && collision.up && velocity.y > 0f)
-                velocity.y = upCollisionSpeedModifier;
+                _velocity.y = upCollisionSpeedModifier;
 
             // Don't let the character to move left (or right)
             // exists a lateral collision along the lateral moving direction
             if ((collision.left && velocity.x < 0) || (collision.right && velocity.x > 0f))
-                velocity.x = 0f;
+                _velocity.x = 0f;
 
             // Compute the delta position
             deltaPosition = velocity * Time.deltaTime;
@@ -136,25 +145,13 @@ namespace Characta2D
             // reset the input
             input = Vector2.zero;
         }
-
+        
         private void CheckCollisions(ref Vector2 deltaPosition)
         {
             UpdateOrigins();
-            if (deltaPosition.x != 0.0f)
-            {
-                if (deltaPosition.x > 0.0f)
-                {
-                    HorizontalCollision(Vector2.right, ref deltaPosition);
-                    collision.left = false;
-                }                    
-                else
-                {
-                    HorizontalCollision(Vector2.left, ref deltaPosition);
-                    collision.right = false;
-                }
-            }
-
-            collision.down = collision.up = false;
+            collision.Clear();            
+            HorizontalCollision(Vector2.right, ref deltaPosition);
+            HorizontalCollision(Vector2.left, ref deltaPosition);
             VerticalCollision(Vector2.down, ref deltaPosition);
             VerticalCollision(Vector2.up, ref deltaPosition);
         }

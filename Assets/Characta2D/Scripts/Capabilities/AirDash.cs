@@ -6,7 +6,6 @@ namespace Characta2D
     [AddComponentMenu("Characta2D/Capability/AirDash")]
     public class AirDash : Characta2D.CharactaCapability
     {
-        /*
         public float maxSpeed = 10f;
         public float duration = .2f;
         float timer = 0f;
@@ -28,14 +27,14 @@ namespace Characta2D
 
         void LateUpdate()
 		{
-			if (character.desiredMovement.x != 0.0f)
-				lastDirection = 1 * Mathf.Sign(character.desiredMovement.x);
+			if (character.input.x != 0.0f)
+				lastDirection = 1 * Mathf.Sign(character.input.x);
 
 			if (isPlayer && canActivate && Input.GetButtonDown(inputButton))
             {
                 timer = duration;
-				character.velocity.x = lastDirection * maxSpeed;
-                character.velocity.y = 0;
+                character.EnableGravity(false);
+                character.ApplyHorizontalInput(lastDirection * maxSpeed);
                 activated = true;
                 OnDashStart.Invoke();
             }
@@ -43,10 +42,10 @@ namespace Characta2D
             if (timer > 0f)
             {
                 timer -= Time.deltaTime;
-				character.velocity.x = lastDirection * maxSpeed;
-                character.velocity.y = 0;
+                character.ApplyHorizontalInput(lastDirection * maxSpeed);
                 if (timer <= 0f)
                 {
+                    character.EnableGravity();
                     OnDashStop.Invoke();                    
                 }
             }
@@ -59,12 +58,11 @@ namespace Characta2D
 		{
 			if (!isPlayer && canActivate) {
 				timer = duration;
-				character.velocity.x = lastDirection * maxSpeed;
-				character.velocity.y = 0;
-				activated = true;
+                character.EnableGravity(false);
+                character.ApplyHorizontalInput(lastDirection * maxSpeed);
+                activated = true;
 				OnDashStart.Invoke();
 			}
 		}
-        */
     }
 }

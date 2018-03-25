@@ -57,12 +57,14 @@ public class MovingPlatform : MonoBehaviour {
 	}
 
 	void OnCollisionEnter2D(Collision2D other){
-		if (other.gameObject.GetComponent<Characta2D.CharactaObject> () != null)
+        var character = other.gameObject.GetComponent<Characta2D.CharactaObject>();
+        if (character != null && character.collision.down)
 			other.gameObject.transform.parent = transform;
 	}
 
 	void OnCollisionExit2D(Collision2D other){
-		if (other.gameObject.GetComponent<Characta2D.CharactaObject> () != null)
+        var character = other.gameObject.GetComponent<Characta2D.CharactaObject>();
+        if (character != null && character.transform.parent == transform)
 			other.gameObject.transform.parent = null;
 	}
 }

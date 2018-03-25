@@ -6,7 +6,6 @@ namespace Characta2D
     [AddComponentMenu("Characta2D/Capability/WallJump")]
     public class WallJump : Characta2D.CharactaCapability
     {
-        /*
         public float jumpTakeOffSpeed = 7;
 		public float jumpFallFactor = 0.5f;
 		// The input button used to ativate this capability
@@ -36,22 +35,19 @@ namespace Characta2D
 			
             if (Input.GetButtonDown(inputButton) && canJump)
             {
-                character.velocity.y = jumpTakeOffSpeed;
+                character.ApplyVerticalInput(jumpTakeOffSpeed);
                 OnJump.Invoke();
             }
             else if (Input.GetButtonUp(inputButton))
             {
-                if (character.velocity.y > 0)
-                {
-                    character.velocity.y *= jumpFallFactor;
-                }
+                character.ApplyVerticalInput(character.velocity.y * jumpFallFactor);
             }
         }
 
 		public override void Activate ()
 		{
 			if (!isPlayer && canJump) {
-				character.velocity.y = jumpTakeOffSpeed;
+                character.ApplyVerticalInput(jumpTakeOffSpeed);
 				OnJump.Invoke();
 				Invoke ("Fall", AIJumpDuration);
 			}
@@ -59,10 +55,8 @@ namespace Characta2D
 
 		// AI buttonRelease simulation
 		void Fall()
-		{
-			if (character.velocity.y > 0)
-				character.velocity.y *= jumpFallFactor;
-		}
-        */
+        {
+            character.ApplyVerticalInput(character.velocity.y * jumpFallFactor);
+        }
     }
 }

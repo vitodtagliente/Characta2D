@@ -1,15 +1,15 @@
 ﻿using UnityEngine;
+using System;
 
 /*
  * Plugin style system for Characta
- */ 
+ */
 
 namespace Characta2D
 {
 	[RequireComponent(typeof(Characta2D.CharactaObject))]
     public abstract class CharactaCapability : MonoBehaviour
     {
-
 		Characta2D.CharactaObject _character;
 		public Characta2D.CharactaObject character
         {
@@ -21,12 +21,22 @@ namespace Characta2D
             }
         }
 
-		// set to true if the character is controller by the player
-		// false for the AI
-		public bool isPlayer = true;
+		// set to true if the character is controlled by the local player
+		// false for the AI or secondary players
+		public bool isPlayer { get; private set; }
 
-		public virtual void Activate()
+        private void Awake()
+        {
+            isPlayer = GetComponent<Characta2D.CharactaPlayerController>() != null;
+        }
+
+        public virtual void Activate()
 		{
 		}
+
+        public virtual void Deactivate()
+        {
+
+        }
 	}
 }

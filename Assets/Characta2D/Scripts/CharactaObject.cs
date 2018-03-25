@@ -62,18 +62,36 @@ namespace Characta2D
         public Vector2 input
         {
             get { return physics.input; }
-            set { physics.input = value; }
         }
 
         public Vector2 velocity
         {
             get { return physics.velocity; }
-            set { physics.velocity = value; }
         }      
         
         public Characta2D.CollisionStateInfo collision
         {
             get { return physics.collision; }
+        }
+
+        public void ApplyInput(float horizontal, float vertical)
+        {
+            physics.input = new Vector2(horizontal, vertical);
+        }
+
+        public void ApplyHorizontalInput(float value)
+        {
+            physics.input.x = value;
+        }
+
+        public void ApplyVerticalInput(float value)
+        {
+            physics.input.y = value;
+        }
+
+        public void EnableGravity(bool value = true)
+        {
+            physics.gravityEnabled = value;
         }
     }
 }

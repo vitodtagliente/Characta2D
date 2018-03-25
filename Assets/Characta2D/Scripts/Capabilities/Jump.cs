@@ -36,32 +36,28 @@ namespace Characta2D
 
 			if (Input.GetButtonDown (inputButton) && canJump)
             {
-                character.physics.velocity.y = jumpTakeOffSpeed;
+                character.ApplyVerticalInput(jumpTakeOffSpeed);
                 OnJump.Invoke();
             }
             else if (Input.GetButtonUp(inputButton))
             {
-                if (character.velocity.y > 0)
-                {
-                    character.physics.velocity.y *= jumpFallFactor;
-                }
+                character.ApplyVerticalInput(character.velocity.y * jumpFallFactor);
             }
         }
 
 		public override void Activate ()
 		{
 			if (!isPlayer && canJump) {
-				character.physics.velocity.y = jumpTakeOffSpeed;
-				OnJump.Invoke();
+                character.ApplyVerticalInput(jumpTakeOffSpeed);
+                OnJump.Invoke();
 				Invoke ("Fall", AIJumpDuration);
 			}
 		}
 
 		// AI buttonRelease simulation
 		void Fall()
-		{
-			if (character.velocity.y > 0)
-				character.physics.velocity.y *= jumpFallFactor;
-		}
+        {
+            character.ApplyVerticalInput(character.velocity.y * jumpFallFactor);
+        }
 	}
 }

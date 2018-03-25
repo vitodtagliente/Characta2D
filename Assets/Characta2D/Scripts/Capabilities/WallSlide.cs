@@ -38,7 +38,7 @@ namespace Characta2D
 				if ((character.input.x < 0.0f && character.collision.left) || 
 					(character.input.x > 0.0f && character.collision.right))
                 {
-                    character.physics.velocity.y *= slideSpeed;
+                    character.ApplyVerticalInput(character.velocity.y * slideSpeed);
                     // the character started to slide on the wall
                     wasSliding = true;
                 }

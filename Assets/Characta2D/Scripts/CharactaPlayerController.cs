@@ -29,7 +29,7 @@ namespace Characta2D
         // Get the user input
         public virtual void Update()
         {
-            sprite.input = new Vector2(
+            sprite.ApplyInput(
                 Input.GetAxis(horizontalInputAxis) * speed,
                 0.0f
             );
