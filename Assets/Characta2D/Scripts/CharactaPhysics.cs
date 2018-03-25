@@ -47,8 +47,8 @@ namespace Characta2D
         int horizontalRays = 6;
 
         // The velocity of this object, which will let the character to move on the scene
-        Vector2 _velocity = Vector2.zero;
-        public Vector2 velocity { get { return _velocity; } }
+        [HideInInspector]
+        public Vector2 velocity = Vector2.zero;
         // how much the character is moving per frame
         Vector2 deltaPosition = Vector2.zero;
         // simply, the direction in which the character is moving on
@@ -102,29 +102,29 @@ namespace Characta2D
             lastCollision = collision;
 
             // Apply input
-            _velocity.x = input.x;
+            velocity.x = input.x;
             if (input.y != 0.0f)
-                _velocity.y = input.y;
+                velocity.y = input.y;
       
             // Apply the gravity to the character's velocity
             if (gravityEnabled)
-                _velocity += gravityModifier * Physics2D.gravity * Time.deltaTime;
+                velocity += gravityModifier * Physics2D.gravity * Time.deltaTime;
 
             // If the character is grounded,
             // don't let him to move down
             if (collision.down && velocity.y < 0f)
-                _velocity.y = 0;
+                velocity.y = 0;
 
             // If the character has a collision on top,
             // don't let him to move up
             // but apply a movement into the reverse direction
             if (collision.down == false && collision.up && velocity.y > 0f)
-                _velocity.y = upCollisionSpeedModifier;
+                velocity.y = upCollisionSpeedModifier;
 
             // Don't let the character to move left (or right)
             // exists a lateral collision along the lateral moving direction
             if ((collision.left && velocity.x < 0) || (collision.right && velocity.x > 0f))
-                _velocity.x = 0f;
+                velocity.x = 0f;
 
             // Compute the delta position
             deltaPosition = velocity * Time.deltaTime;
